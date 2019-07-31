@@ -1,0 +1,15 @@
+Wed 31 Jul 2019 10:50:06 AM +0545
+
+Just finished watching 'TPB AFK'. Wish to test my own meagre skills.
+reference: www.bittorrent.rog/beps/bep_0003.html
+
+
+1) bittorent file distribution"
+    - web server (ordinary)
+    - BitTorrent tracker
+    - static 'metainfo' file
+    - an 'original' downloader
+    - End-User web browsers
+    - End-User downloaders
+
+
