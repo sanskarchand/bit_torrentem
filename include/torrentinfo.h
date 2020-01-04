@@ -6,6 +6,8 @@
 #include <string>
 #include <map>
 
+#define BT_DEBUG 1
+// This is just a Recursive-Descent Parser, a la The Dragon Book
 // BDict -> d<BString><BElem>e        //BString maps to BElem
 // BList-> l<BX>e
 // BX-> BElem<BX> | E // epsilon
@@ -42,6 +44,7 @@ public:
 
     bool isNonTerminal(std::string token);
     std::vector<std::string> getProductions(std::string token);
+    std::string getProductionHead(std::string production);
     std::vector<std::string> getProductionBodyTokens(std::string token);
     // one fuction for each nonterm
     void BDict();
