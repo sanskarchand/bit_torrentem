@@ -16,9 +16,11 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 add_executable(BitTorrentem
   main.cpp
   mainwindow.cpp
-  torrent.cpp
+  parser.cpp
   include/mainwindow.h
-  include/torrentinfo.h
+  include/parser.hpp
+  include/torrent.hpp
+
 )
 
 target_link_libraries(BitTorrentem PRIVATE Qt5::Widgets)
