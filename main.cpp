@@ -37,9 +37,8 @@ int main(int argc, char *argv[])
 
     // TEST:get announce string
     Parser p;
-    std::cout << "" << std::endl;
-    std::cout << p.parseByteString(torr_data, 11) << std::endl;
-
+    //std::cout << p.parseByteString(torr_data, 11) << std::endl;
+    ParsedObject po = p.parseDictionary(torr_data, 0);
     //NOTABENE APR13,no GUI for now
     //win_main.show();
     //return app.exec();
