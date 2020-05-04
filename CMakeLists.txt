@@ -17,9 +17,14 @@ add_executable(BitTorrentem
   main.cpp
   mainwindow.cpp
   parser.cpp
+  torrent.cpp
+  bt_network/network.cpp
+  bt_utils/utils.cpp
   include/mainwindow.h
   include/parser.hpp
   include/torrent.hpp
+  include/bt_network/network.hpp
+  include/bt_utils/utils.hpp
 
 )
 

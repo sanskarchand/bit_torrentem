@@ -1,74 +1,50 @@
-#include "include/torrentinfo.h"
+#include "include/torrent.hpp"
 
-Parser::Parser()
+Torrent::Torrent(ParsedObject *parsed_dict)
 {
+    ParsedObject ann_string = parsed_dict->po_dictval[S_ANNOUNCE];
+    t_announce = ann_string.po_stringval;
+    t_info = new TorrInfo;
 
-//    std::cout << "Token check\n";
-//    std::vector<std::string> tokens = getProductionBodyTokens(productions.at(0));
+    ParsedObject *info_dict = &parsed_dict->po_dictval[S_INFO];
 
-//    for (std::string str : tokens) {
-//        std::cout << "got " << str << " as a token\n";
-//    }
+    // handle single or multiple files
+    if (info_dict->po_dictval.find(S_FILES) == info_dict->po_dictval.end()) {
+        t_info->ti_single_file = true;
+        printf("[ SINGLE FILE | PLACEHOLDER STRING]");
+    } else {
+        ParsedObject *files_list = &info_dict->po_dictval[S_FILES];
+        for (int i = 0; i < files_list->po_listval.size(); i++) {
+            ParsedObject *dict = &files_list->po_listval.at(i);
 
-    gram_map.emplace(std::make_pair("BDict", &Parser::BDict));
-    getProductionHead(productions.at(0));
+            // ti_file_lengths item GET
+            int val_length = dict->po_dictval[S_LENGTH].po_intval;
 
 
-    FuncPtr fp = gram_map["BDict"];
-    (this->*fp)();
-}
+            // ti_file_paths item GET
+            std::vector<std::string> paths; // list of pahs
+            ParsedObject *list = &dict->po_dictval[S_PATH];
+            for (int j = 0; j < list->po_listval.size(); j++) {
+                paths.push_back(list->po_listval.at(j).po_stringval);
+            }
 
-std::vector<std::string> Parser::getProductions(std::string token)
-{
-    std::vector<std::string> prods;
-    for (std::string prod : productions) {
-        if ( getProductionHead(prod) == token ) {
-            prods.push_back(prod);
+           t_info->ti_file_lengths.push_back(val_length);
+           t_info->ti_file_paths_list.push_back(paths);
         }
     }
-    return prods;
+
+    t_info->ti_name = info_dict->po_dictval[S_NAME].po_stringval;
+    t_info->ti_piece_length = info_dict->po_dictval[S_PIECE_LEN].po_intval;
+
+    //read the pieces in
+    std::string *pieces = &info_dict->po_dictval[S_PIECES].po_stringval;
+
+    t_info->ti_pieces = std::vector<char>(pieces->begin(), pieces->end());
+
+    // extra stuff like comments and dates
 }
 
-std::string Parser::getProductionHead(std::string production)
+Torrent::~Torrent()
 {
-    int index = production.find(" -> ");
-    std::string head = production.substr(0, index);  // in this case, index should count as length
-    return head;
+    delete t_info;
 }
-
-std::vector<std::string> Parser::getProductionBodyTokens(std::string production)
-{
-    std::vector<std::string> tokens;
-
-    int index = production.find(" -> ");
-    std::string rest_string = production.substr(index+4);
-   // std::cout << "FIRST_REST_STRING->" << rest_string << std::endl;
-
-    while ( rest_string.size() != 0 ) {
-
-        int index2 = rest_string.find(" ");
-        std::string token = rest_string.substr(0, index2);
-        tokens.push_back(token);
-
-        // We've reached the end of the production
-        if ( index2 == -1 ) {
-            break;
-        }
-
-        rest_string = rest_string.substr(index2+1);
-        //std::cout << "New string: " << rest_string << std::endl;
-    }
-
-    return tokens;
-}
-
-void  Parser::BDict()
-{
-    std::vector<std::string> bdict_prods = getProductions("BDict");
-}
-
-Torrent::Torrent(std::string torrent_data)
-{
-
-}
-Torrent::~Torrent() {}

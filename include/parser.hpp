@@ -32,12 +32,15 @@ struct ParsedObject {
 
     TOKEN_TYPE po_type;
     std::string po_stringval;
-    std::string po_intval;
+    int po_intval;
 
     std::vector<ParsedObject> po_listval;
     std::map<std::string, ParsedObject> po_dictval;
 };
 
+
+void iteratePrintList(ParsedObject *p_list, int indent_level=0);
+void iteratePrintDict(ParsedObject *p_dict, int indent_level=0);
 
 class Parser
 {

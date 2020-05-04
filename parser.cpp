@@ -134,7 +134,6 @@ ParsedObject Parser::parseByteString(std::string &torr_data, int i)
 
     ret.po_type = T_BYTESTRING;
     ret.po_stringval = torr_data.substr(index+1, bstring_len);
-    printf("ByteString %s\n", ret.po_stringval.c_str());
     return ret;
 }
 
@@ -250,4 +249,74 @@ ParsedObject Parser::parseDictionary(std::string &torr_data, int i)
     return dict_obj;
 }
 
-// parse dict
+
+void iteratePrintList(ParsedObject *p_list, int indent_level)
+{
+    assert("iteratePrintList: not a list" && p_list->po_type == T_LIST);
+
+    for (int i = 0; i < p_list->po_listval.size(); i++ ) {
+        ParsedObject obj = p_list->po_listval.at(i);
+
+        for (int i = 0; i < indent_level; i++) {
+            printf("  ");
+        }
+        printf("(%d)", indent_level);
+
+        if (obj.po_type == T_BYTESTRING) {
+            printf("%s\n", obj.po_stringval.c_str());
+        } else if (obj.po_type == T_INTEGER) {
+            printf("%d\n", obj.po_intval);
+        } else if (obj.po_type == T_LIST) {
+            printf("<<LIST BEGIN>>\n");
+            iteratePrintList(&obj, indent_level + 1);
+            printf("<<LIST END>>\n");
+        } else if (obj.po_type == T_DICTIONARY) {
+            printf("<<DICT BEGIN>>\n");
+            iteratePrintDict(&obj, indent_level + 1);
+            printf("<<DICT END>>\n");
+
+        }
+
+    }
+
+}
+
+void iteratePrintDict(ParsedObject *p_dict, int indent_level)
+{
+    assert("iteratePrintdict: not a dict" && p_dict->po_type == T_DICTIONARY);
+
+    std::map<std::string, ParsedObject>::iterator it;
+
+    for (it = p_dict->po_dictval.begin(); it != p_dict->po_dictval.end(); it++ ) {
+
+        ParsedObject obj = it->second;
+        std::string key = it->first;
+
+        for (int i = 0; i < indent_level; i++) {
+            printf("  ");
+        }
+        printf("(%d)", indent_level);
+
+        printf("K:(%s) -> ", key.c_str());
+        if (obj.po_type != T_BYTESTRING && obj.po_type != T_INTEGER) {
+            printf("\n");
+        }
+
+        if (obj.po_type == T_BYTESTRING) {
+            printf("VAL BYTESTRING: %s\n", obj.po_stringval.c_str());
+        } else if (obj.po_type == T_INTEGER) {
+            printf("VAL INT: %d\n", obj.po_intval);
+        } else if (obj.po_type == T_LIST) {
+            printf("<<LIST BEGIN>>\n");
+            iteratePrintList(&obj, indent_level + 1);
+            printf("<<LIST END>>\n");
+        } else if (obj.po_type == T_DICTIONARY) {
+            printf("<<DICT BEGIN>>\n");
+            iteratePrintDict(&obj, indent_level + 1);
+            printf("<<DICT END>>\n");
+
+        }
+
+    }
+
+}

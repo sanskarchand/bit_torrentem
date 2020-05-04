@@ -1,0 +1,96 @@
+Wed 31 Jul 2019 10:50:06 AM +0545
+
+Just finished watching 'TPB AFK'. Wish to test my own meagre skills.
+reference: www.bittorrent.rog/beps/bep_0003.html
+
+
+1) bittorent file distribution"
+    - web server (ordinary)
+    - BitTorrent tracker
+    - static 'metainfo' file
+    - an 'original' downloader
+    - End-User web browsers
+    - End-User downloaders
+
+----------------------------------------------------------------
+Sat 11 Apr 2020 09:54:02 AM +0545
+I'm an imbecile. Bencoding is not a CFG.
+
+
+Tue 14 Apr 2020 01:56:44 PM +0545
+Consider:
+
+    (gdb) p dict_val
+        $2 = {po_type = T_BYTESTRING, po_stringval = "http:", po_intval = "", po_listval = std::vector of length 0, capacity 0, 
+      po_dictval = std::map with 0 elements}
+
+the parser does not get the full announce string
+string.find is supposed to find the first index
+so why does the string stop after "http:"?
+
+SUSPICION   ->  definitely std::string::find
+...
+
+SOLUTION -> I had intended for the crunching functions to give
+    indices while I treated those return values as lengths in the
+    parsing funcs. Easy to solve.
+----------------------------------------------------------------
+Sun 03 May 2020 07:12:17 PM +0545
+
+Basic GET request with params in query string:
+
+    char *msg = "GET /index.php?peer_id=1 HTTP/1.1\r\n"
+                "Host: 127.0.0.1:8000\r\n"
+                "Accept: text/html\r\n"
+                "Connection: close\r\n"
+                "\r\n\r\n";
+
+
+Need to actually do this with a tracker instead of a dummy php 
+server
+----------------------------------------------------------------
+Sun 03 May 2020 11:43:37 PM +0545
+
+ref: 
+    https://en.wikipedia.org/wiki/SHA-1#/media/File:SHA-1.svg
+    https://tools.ietf.org/html/rfc3174
+
+[Secure Hash Algorithm 1]
+    - bitwise shift, modulo, nonlinear funcs, etc. etc.
+    - avalanche effect
+
+SHA1(input) -> 20-byte output
+
+Will follow wikipedia's pseudocode.
+
+Pre-processing
+m_len = message length in bits = str.length() * sizeof(char) * 8
+need to make it a multiple of 512 bits
+
+Need to append the bit '1'.
+Dealing with chars, so I need to add at least one byte
+Add the byte 0x80 ( 128 = 1000 0000 ) to the array.
+It's done, and we are one a per-byte basis due to std::string
+
+Now I need to add the original message length as a 64-bit
+big-endian integer.
+
+That means splitting it up into 8-bit integers (chars), which
+    is trivial. Just need to ensure it is big-endian.
+
+The endianness of the CPU should be irrelevant here, since
+    the individual bits of a uint64_t can be extracted
+    using bitshifting and masks;
+
+shifting acts on numbers, not their memory layout, and so
+it would be correct to think of a number as begin 'big-endian'
+e.g. 2 bytes -> 0xAB 0x12
+need to extract first byte ( 0x12 )
+    
+    so      0xAB 0x12
+    AND     0x00 0xFF
+    __________________
+            0x00 0x12
+
+therefore, i^th bit = (num_64 >> 8 * i ) & (0xFF)
+----------------------------------------------------------------
