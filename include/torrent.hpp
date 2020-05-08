@@ -43,10 +43,9 @@ struct TorrInfo {
 
 class Torrent {
 public:
-    Torrent(ParsedObject *parsed_dict);  // adding initially
+    Torrent(BtParser::ParsedObject *parsed_dict, std::string torrent_file_path);  // adding initially
     Torrent(std::string filename); // de-serialize from file
    ~Torrent();
-
 
     // torrent and tracker-related info
     std::string t_announce;
@@ -55,6 +54,12 @@ public:
     // info related to downloading
     std::string t_root_dir;
     int t_downlaoded_bytes = 0;
+
+
+    //REFAC_NOTE: Maybe keeping both is redundant
+    //should I make an unparser?
+    std::string t_torrent_file; // the data in the .torrent file
+    BtParser::ParsedObject *t_torrent_dict; // original dict
 
 };
 

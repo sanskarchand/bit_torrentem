@@ -20,12 +20,13 @@ add_executable(BitTorrentem
   torrent.cpp
   bt_network/network.cpp
   bt_utils/utils.cpp
+  bt_utils/urlencode.cpp
   include/mainwindow.h
   include/parser.hpp
   include/torrent.hpp
   include/bt_network/network.hpp
   include/bt_utils/utils.hpp
-
+  include/bt_utils/urlencode.hpp
 )
 
 target_link_libraries(BitTorrentem PRIVATE Qt5::Widgets)

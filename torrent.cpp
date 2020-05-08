@@ -1,21 +1,24 @@
 #include "include/torrent.hpp"
 
-Torrent::Torrent(ParsedObject *parsed_dict)
+Torrent::Torrent(BtParser::ParsedObject *parsed_dict, std::string torrent_raw_file)
 {
-    ParsedObject ann_string = parsed_dict->po_dictval[S_ANNOUNCE];
+    this->t_torrent_file = torrent_raw_file;
+    this->t_torrent_dict = parsed_dict;
+
+    BtParser::ParsedObject ann_string = parsed_dict->po_dictval[S_ANNOUNCE];
     t_announce = ann_string.po_stringval;
     t_info = new TorrInfo;
 
-    ParsedObject *info_dict = &parsed_dict->po_dictval[S_INFO];
+    BtParser::ParsedObject *info_dict = &parsed_dict->po_dictval[S_INFO];
 
     // handle single or multiple files
     if (info_dict->po_dictval.find(S_FILES) == info_dict->po_dictval.end()) {
         t_info->ti_single_file = true;
         printf("[ SINGLE FILE | PLACEHOLDER STRING]");
     } else {
-        ParsedObject *files_list = &info_dict->po_dictval[S_FILES];
+        BtParser::ParsedObject *files_list = &info_dict->po_dictval[S_FILES];
         for (int i = 0; i < files_list->po_listval.size(); i++) {
-            ParsedObject *dict = &files_list->po_listval.at(i);
+            BtParser::ParsedObject *dict = &files_list->po_listval.at(i);
 
             // ti_file_lengths item GET
             int val_length = dict->po_dictval[S_LENGTH].po_intval;
@@ -23,7 +26,7 @@ Torrent::Torrent(ParsedObject *parsed_dict)
 
             // ti_file_paths item GET
             std::vector<std::string> paths; // list of pahs
-            ParsedObject *list = &dict->po_dictval[S_PATH];
+            BtParser::ParsedObject *list = &dict->po_dictval[S_PATH];
             for (int j = 0; j < list->po_listval.size(); j++) {
                 paths.push_back(list->po_listval.at(j).po_stringval);
             }

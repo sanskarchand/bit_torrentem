@@ -37,22 +37,14 @@ int main(int argc, char *argv[])
 
 
     std::string torr_data = loadMetainfoFile(test_torrent_file);
-    Parser p;
-    ParsedObject po = p.parseDictionary(torr_data, 0);
-    //iteratePrintDict(&po);
-    Torrent torr_obj(&po);
 
-    std::string test_string = "The quick brown fox jumps over the lazy dog";
-    std::cout << "SHA1 test | string = " << test_string << std::endl;
-    std::cout << "Hash: " << std::endl;
-    std::string hash_str = calculateSHA1(test_string);
+    BtParser::ParsedObject po = BtParser::parseDictionary(torr_data, 0);
+    BtParser::iteratePrintDict(&po);
+    Torrent torr_obj(&po, torr_data);
 
-    // beware of sign extension
-    for (unsigned char c: hash_str) {
-        printf("%x", c);
-    }
-    printf("\n");
-
+    //BtParser::ParsedObject info_obj = po.po_dictval["info"];
+    std::string info = BtParser::getInfoSubString(torr_data, &po.po_dictval["info"]);
+    //std::cout << info  << std::endl;
 
     //TorrentNetworkHandler tnh = TorrentNetworkHandler(&torr_obj);
     //tnh.connectToTracker();
