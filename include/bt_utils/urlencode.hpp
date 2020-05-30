@@ -2,10 +2,15 @@
 #define URLENCODE_HPP
 
 #include <string>
+#include <cstdio>
+#include <ctype.h>
 
-namespace  BtUtils {
+namespace  BtUtils
+{
 
-    std::string getByteSequence(std::string inp);
-}
+std::string urlEncode(std::string inp);
+
+
+}   //END_NAMESPACE_BTUTILS
 
 #endif // URLENCODE_HPP

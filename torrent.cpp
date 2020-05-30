@@ -1,11 +1,18 @@
 #include "include/torrent.hpp"
 
+namespace BtTorrent {
+
+
 Torrent::Torrent(BtParser::ParsedObject *parsed_dict, std::string torrent_raw_file)
 {
     this->t_torrent_file = torrent_raw_file;
     this->t_torrent_dict = parsed_dict;
 
     BtParser::ParsedObject ann_string = parsed_dict->po_dictval[S_ANNOUNCE];
+
+    //NOTABENE for announce lists: have not added this S_ANN_LIST
+    //just add as a first element for now
+    t_announce_vec.push_back(ann_string.po_stringval);
     t_announce = ann_string.po_stringval;
     t_info = new TorrInfo;
 
@@ -22,6 +29,7 @@ Torrent::Torrent(BtParser::ParsedObject *parsed_dict, std::string torrent_raw_fi
 
             // ti_file_lengths item GET
             int val_length = dict->po_dictval[S_LENGTH].po_intval;
+            t_total_size += val_length;
 
 
             // ti_file_paths item GET
@@ -51,3 +59,5 @@ Torrent::~Torrent()
 {
     delete t_info;
 }
+
+} //END_NAMESPACE_BTTORRENT

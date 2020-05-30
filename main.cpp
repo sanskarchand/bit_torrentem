@@ -3,6 +3,7 @@
 #include "include/torrent.hpp"
 #include "include/bt_network/network.hpp"
 #include "include/bt_utils/utils.hpp"
+#include "include/bt_utils/urlencode.hpp"
 #include <QApplication>
 #include <QLabel>
 
@@ -40,13 +41,16 @@ int main(int argc, char *argv[])
 
     BtParser::ParsedObject po = BtParser::parseDictionary(torr_data, 0);
     BtParser::iteratePrintDict(&po);
-    Torrent torr_obj(&po, torr_data);
+    BtTorrent::Torrent torr_obj(&po, torr_data);
 
     //BtParser::ParsedObject info_obj = po.po_dictval["info"];
-    std::string info = BtParser::getInfoSubString(torr_data, &po.po_dictval["info"]);
-    //std::cout << info  << std::endl;
+    // std::string info = BtParser::getInfoSubString(torr_data, &po.po_dictval["info"]);
 
-    //TorrentNetworkHandler tnh = TorrentNetworkHandler(&torr_obj);
+    //std::cout << info  << std::endl;
+    BtNetwork::TorrentNetworkHandler tnh = BtNetwork::TorrentNetworkHandler(&torr_obj);
+    tnh.networkMainLoop();
+
+    //tnh.connectToTracker(0);
     //tnh.connectToTracker();
 
 

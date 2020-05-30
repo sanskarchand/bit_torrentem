@@ -94,3 +94,42 @@ need to extract first byte ( 0x12 )
 
 therefore, i^th bit = (num_64 >> 8 * i ) & (0xFF)
 ----------------------------------------------------------------
+Wed 13 May 2020 06:20:08 AM +0545
+
+rofl. 'stack smashing detected'
+
+Will use `netstat -nputw` to understand how transmission is
+doing its stuff.
+
+Still unsure about a lot of things.
+Time to go back to beej.
+http://beej.us/guide/bgnet/html
+---------------------------------------------------------------- 
+Sat 30 May 2020 11:07:31 AM +0545
+
+Ref: https://byzantinemysteries.wordpress.com/2017/10/30/bittorrent-tracker-protocol-examples/
+
+Problems:
+    -> no error handling
+    -> multiple trackers at one are not handle
+    -> multi-threading; haven't even designed a mechanism yet
+    -> the include paths seem weird
+
+
+current problem: no reply to tracker HTTP request
+
+solution:
+
+One frustrating mistake was in  the line
+
+    if ((status = getaddrinfo(url.c_str(), port_no.c_str(), &hints, &results)) != 0) 
+
+In place of port_no.c_str(), I'd been using "http" for the lookup of 
+the IP initially and had forgotten to change it.
+
+It only makes sense that there would be no response from the tracker
+since I'd been asking the wrong port, 80 instead of, say, 7777
+
+
+
+----------------------------------------------------------------

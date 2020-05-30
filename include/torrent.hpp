@@ -21,6 +21,9 @@
 
 //typedef std::map<std::string, std::vector<std::string>> FilesDict;
 
+namespace BtTorrent {
+
+
 struct TorrInfo {
 
     TorrInfo(): ti_single_file(false),ti_creation_date(-1),
@@ -49,11 +52,17 @@ public:
 
     // torrent and tracker-related info
     std::string t_announce;
+    std::vector<std::string> t_announce_vec;
     struct TorrInfo *t_info;
 
     // info related to downloading
     std::string t_root_dir;
-    int t_downlaoded_bytes = 0;
+    uint64_t t_total_size = 0;
+    uint64_t t_downloaded_bytes = 0;
+    uint64_t t_uploaded_bytes = 0;
+
+    bool t_error;
+    std::string t_err_string;
 
 
     //REFAC_NOTE: Maybe keeping both is redundant
@@ -63,4 +72,5 @@ public:
 
 };
 
+} //END_NAMESPACE_BTTORRENT
 #endif // TORRENT_HPP

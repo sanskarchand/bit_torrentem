@@ -22,5 +22,6 @@ namespace BtUtils {
     struct BtUint160 leftShiftUint160(struct BtUint160 num, int num_bits);
     struct BtUint160 bitwiseOrUint160(struct BtUint160 num1, struct BtUint160 num2);
     std::string getStringFromBtUint160(struct BtUint160 num);
-}
+} //END_NAMESPACE_BTUTILS
+
 #endif // UTILS_HPP
