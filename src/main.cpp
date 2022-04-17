@@ -1,15 +1,16 @@
-#include "include/mainwindow.h"
-#include "include/parser.hpp"
-#include "include/torrent.hpp"
-#include "include/bt_network/network.hpp"
-#include "include/bt_utils/utils.hpp"
-#include "include/bt_utils/urlencode.hpp"
+#include "mainwindow.h"
+#include "parser.hpp"
+#include "torrent.hpp"
+#include "bt_network/network.hpp"
+#include "bt_utils/utils.hpp"
+#include "bt_utils/urlencode.hpp"
 #include <QApplication>
 #include <QLabel>
 
 #include <string>
 #include <iostream>
 #include <assert.h>
+#include <unistd.h>
 #include <iterator>
 #include <fstream>
 
@@ -17,6 +18,10 @@
 std::string loadMetainfoFile(const char *file_name)
 {
     // NB: apparently inefficient for large files
+    char cwdbuf[512];
+    getcwd(cwdbuf, 512);
+    printf("getcwd(): %s\n", cwdbuf);
+
     std::ifstream torr_fs(file_name);
     std::string torr_info((std::istreambuf_iterator<char>(torr_fs)), std::istreambuf_iterator<char>());
 
@@ -27,11 +32,12 @@ std::string loadMetainfoFile(const char *file_name)
 
 int main(int argc, char *argv[])
 {
+    printf("At main\n");
     QApplication app(argc, argv);
     MainWindow win_main;
 
     // C should allow this
-    const char *test_torrent_file="../[Natsu] Yuru Camp  △ [BD][1080P][AAC][HEVC].torrent";
+    const char *test_torrent_file="../res/[Natsu] Yuru Camp  △ [BD][1080P][AAC][HEVC].torrent";
 
     QLabel *label = new QLabel(&win_main);
     label->setText("Print a torrent file to stdout");

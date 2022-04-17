@@ -1,4 +1,4 @@
-#include "../include/bt_network/network.hpp"
+#include "bt_network/network.hpp"
 
 #include <unistd.h>
 #include <iostream> //remove this

@@ -131,5 +131,15 @@ It only makes sense that there would be no response from the tracker
 since I'd been asking the wrong port, 80 instead of, say, 7777
 
 
-
 ----------------------------------------------------------------
+Sun 17 Apr 2022 05:19:40 PM +0545
+
+A considerable amount of time has passed since my last entry.
+Am picking this up again.
+
+Currently trying to daemonize the program so that I may not be 
+bound to the GUI in the future.
+
+Reference: transmission
+
+static int daemon_start:
