@@ -198,7 +198,7 @@ ParsedObject parseList(std::string &torr_data, int i)
 ParsedObject parseDictionary(std::string &torr_data, int i)
 {
     // d<string><elem>....<string><elem>e
-     assert ("parseDict: wrong starting index" && torr_data.at(i) == 'd');
+    assert ("parseDict: wrong starting index" && torr_data.at(i) == 'd');
 
     ParsedObject dict_obj;
     dict_obj.po_type = T_DICTIONARY;

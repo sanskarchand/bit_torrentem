@@ -10,7 +10,6 @@
 #include <string>
 #include <iostream>
 #include <assert.h>
-#include <unistd.h>
 #include <iterator>
 #include <fstream>
 
@@ -18,10 +17,6 @@
 std::string loadMetainfoFile(const char *file_name)
 {
     // NB: apparently inefficient for large files
-    char cwdbuf[512];
-    getcwd(cwdbuf, 512);
-    printf("getcwd(): %s\n", cwdbuf);
-
     std::ifstream torr_fs(file_name);
     std::string torr_info((std::istreambuf_iterator<char>(torr_fs)), std::istreambuf_iterator<char>());
 
@@ -46,7 +41,7 @@ int main(int argc, char *argv[])
     std::string torr_data = loadMetainfoFile(test_torrent_file);
 
     BtParser::ParsedObject po = BtParser::parseDictionary(torr_data, 0);
-    BtParser::iteratePrintDict(&po);
+    //BtParser::iteratePrintDict(&po);
     BtTorrent::Torrent torr_obj(&po, torr_data);
 
     //BtParser::ParsedObject info_obj = po.po_dictval["info"];

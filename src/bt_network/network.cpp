@@ -2,6 +2,11 @@
 
 #include <unistd.h>
 #include <iostream> //remove this
+#include <stdio.h>  //remove this
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+
 
 namespace BtNetwork {
 
@@ -60,9 +65,12 @@ int TorrentNetworkHandler::connectToTracker(int tracker_index)
     // first res; will be IPv6 for localhost testing, but definitely IPv4 for actual trackers
     sock_fd = socket(results->ai_family, results->ai_socktype, results->ai_protocol);
 
-    int bind(int sockfd, struct sockaddr *my_addr, int addrlen);
+    if (connect(sock_fd, results->ai_addr, results->ai_addrlen) == -1) {
+        close(sock_fd);
+        fprintf(stderr, "Could not connect to tracker\n");
+    }
 
-    connect(sock_fd, results->ai_addr, results->ai_addrlen);
+
     m_status = NS_TRACKER_CONNECTED;
 
     // hang around for a while
@@ -144,68 +152,65 @@ int TorrentNetworkHandler::sendTrackerRequest(std::string m_tracker_http_req)
     request_string += "\r\n\r\n";
 
     int sockfd = m_tracker_socket_map[m_current_tracker];
+
+    fprintf(stderr, "Sockfd is %d\n", sockfd);
+    fflush(stderr);
+
     int len = request_string.size();
 
     if (send(sockfd, static_cast<const void*>(request_string.c_str()), len, 0) != len) {
-        printf("Not fully sent\n");
+        fprintf(stderr, "Not fully sent\n");
     } else {
-        std::cout << "SENT: \n";
+        std::cout << "Trackert GET req. sent: \n";
         std::cout << request_string << std::endl;
     }
 
     m_status = NS_SENT_TRACKER_REQUEST;
 
-    char buf[512];
+    char buf[512], samebuf[512];
+
     int recvlen = recv(sockfd, (void *)buf, 512, 0);
-    printf("rlen:%d RECV:%s\n", recvlen, buf);
+    std::cout << "Recvlen = " << recvlen << std::endl;
+    if (recvlen == -1) {
+        std::cerr << "recv error" << std::endl;
+        std::cerr << gai_strerror(errno) << std::endl;
+        return -1;
+    }
+
+    memcpy(samebuf, buf, 512);
+    strtok(samebuf, "\r\n");
+    strtok(NULL, "\r\n");
+    printf("Tracker resp: %s\n", strtok(NULL, "\r\n"));
+
+
+
+    // obtain and parse the bencoded data from the tracker's HTTP response
+    // first, check if we got all the necessary bytes using recv()
+//    strtok(samebuf, "\r\n");
+//    char *con_len = strtok(NULL, "\r\n");
+//    con_len = strtok(con_len, ": ");
+//    printf("Conlen so far %s\n", con_len);
+
+
+//    while (*con_len++ != '\r') {
+//        ;
+//    }
+//    *con_len = 0;
+//    printf("Con len %s\n", con_len);
+
+
+/*
+    const char *actual_resp = strtok(NULL, "\r\n");
+    std::string parse_data = std::string(actual_resp);
+    std::cout << parse_data << std::endl;
+    BtParser::ParsedObject po = BtParser::parseDictionary(parse_data, 0);
+    BtParser::iteratePrintDict(&po);
+*/
     return 1;
 }
 
 std::string TorrentNetworkHandler::getTrackerResponse()
 {
-    struct addrinfo hints, *results;
-    struct sockaddr_storage incoming_addr;
-    socklen_t addr_size;
-    int status, socket_fd;
-
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-
-    if ((status = getaddrinfo(NULL,  CLIENT_PORT, &hints, &results)) != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-    }
-
-    socket_fd = socket(results->ai_family, results->ai_socktype, results->ai_protocol);
-    if (bind(socket_fd, results->ai_addr, results->ai_addrlen) == -1) {
-        fprintf(stderr, "network.cpp: listenForTracker(): bind() failed\n");
-    }
-
-    if (listen(socket_fd, BACKLOG_SIZE) == -1) {
-        fprintf(stderr, "network.cpp: listenForTracker(): listen(): %s\n", strerror(errno));
-    }
-
-    addr_size = sizeof incoming_addr;
-    m_status = NS_WAIT_TRACKER_RESPONSE;
-    printf("Started to wait for a response\n");
-
-    int new_sockfd;
-    while (1) {
-        new_sockfd = accept(socket_fd, (struct sockaddr *)&incoming_addr, &addr_size);
-        if (new_sockfd == -1) {
-            continue;
-        }
-        printf("GOt a conn!\n");
-        break;
-
-    }
-    char listen_buf[512];
-    //NOTABENE: checking length
-    int recvlen = recv(new_sockfd, static_cast<void*>(listen_buf), 512, 0);
-
-    m_status = NS_GOT_TRACKER_RESPONSE;
-    return std::string(listen_buf);
 }
 
 
@@ -214,9 +219,8 @@ void TorrentNetworkHandler::networkMainLoop()
 {
     bool quit = false;
 
-    printf("Size of sockaddr %u \n", sizeof(struct sockaddr));
     // initial tracker-req-resp
-    connectToTracker(m_current_tracker);
+    int sock_fd = connectToTracker(m_current_tracker);
     struct TrackerRequest tra_req = generateTrackerRequest(std::string(CLIENT_PORT));
     std::string param_string = buildParamString(tra_req);
     sendTrackerRequest(param_string);
