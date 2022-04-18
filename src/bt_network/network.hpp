@@ -45,7 +45,7 @@ enum bt_NetStatus {
  *
  * You can use <
  */
-struct TrackerRequest {
+typedef struct {
     std::string info_hash;
     std::string peer_id;
 
@@ -56,27 +56,16 @@ struct TrackerRequest {
     bool no_peer_id;
 
     std::string event;
-};
+} TrackerRequest;
 
-struct TrackerResponse {
-
-};
-
-std::string buildParamString(struct TrackerRequest track_req);
-// One of these for a single torrent
-// NOTABENE: assuming we use only a single tracker for now
-// JANNYNOTES: must rewrite later to utilize multiple trackers
 class TorrentNetworkHandler
 {
 public:
 
     TorrentNetworkHandler(BtTorrent::Torrent *torr_obj);
 
-    int connectToTracker(int tracker_index=0);
-    struct TrackerRequest generateTrackerRequest(std::string port_listen);
-    int sendTrackerRequest(std::string m_tracker_http_req);
-    // NOTABENE: update or mainloop? Hmm, decisions, decisions
-    std::string getTrackerResponse();
+    TrackerRequest generateTrackerRequest(std::string port_listen);
+    int initialTrackerRequest(int tracker_idx=0);
     void networkMainLoop();
 
     BtTorrent::Torrent *m_torrent;
