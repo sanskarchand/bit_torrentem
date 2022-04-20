@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <iostream> //remove this
 #include <stdio.h>  //remove this
+#include <cctype>   //remove this
+#include <algorithm>
+
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -63,15 +66,18 @@ int TorrentNetworkHandler::initialTrackerRequest(int tracker_idx)
         std::cerr << "network.cpp: err: " << resp.error.message << std::endl;
         return -1;
     }
-    std::cout << "Status code: " << resp.status_code << std::endl;
-    std::cout << "Content type: " << resp.header["content-type"] << std::endl;
-    std::cout << "Resplen " << resp.text.size() << std::endl;
-    std::cout << "Tracker resp (decoded): \n";
 
-    //Why do I get strange bytes in the middle of the data??
-    for (int i = 0; i < resp.text.size(); i++) {
-        std::cout << resp.text.at(i) << std::endl;
-    }
+    std::string text = resp.text;
+    char *filtered = new char[text.size() + 1];
+//    auto printable = text | std::views::filter(
+//                [](char c) { return isalnum(c); });
+
+    auto printable = std::copy_if(text.begin(), text.end(), filtered,
+                                  [](char c){ return isalnum(c); });
+
+    std::replace_if(text.begin(), text.end(), std::not_fn(isalnum), '@');
+    std::cout << "printable resp body: \n" << filtered << std::endl;
+    std::cout << "replaced text: \n" << text << std::endl;
 
     BtParser::ParsedObject po = BtParser::parseDictionary(resp.text, 0);
     BtParser::iteratePrintDict(&po);
