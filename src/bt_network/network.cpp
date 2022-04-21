@@ -3,8 +3,6 @@
 #include <unistd.h>
 #include <iostream> //remove this
 #include <stdio.h>  //remove this
-#include <cctype>   //remove this
-#include <algorithm>
 
 #include <errno.h>
 #include <string.h>
@@ -66,15 +64,6 @@ int TorrentNetworkHandler::initialTrackerRequest(int tracker_idx)
         std::cerr << "network.cpp: err: " << resp.error.message << std::endl;
         return -1;
     }
-
-    std::string text = resp.text;
-    std::cout << "resp.text size " << resp.text.size() << std::endl;
-    char *filtered = new char[text.size() + 1];
-
-
-    std::replace_if(text.begin(), text.end(), std::not_fn([](char c){ return isalnum(c) || c == ':'; }), '@');
-    std::cout << "replaced text (size " << text.size() << " ): \n" << text << std::endl;
-
     BtParser::ParsedObject po = BtParser::parseDictionary(resp.text, 0);
     BtParser::iteratePrintDict(&po);
 

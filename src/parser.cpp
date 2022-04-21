@@ -211,7 +211,6 @@ ParsedObject parseDictionary(std::string &torr_data, int i)
     char check_c = torr_data.at(r_index);
 
     while (check_c != 'e') {
-        std::cout << "r_index = " << r_index << std::endl;
         assert("Error: key not string" && identifyToken(torr_data, r_index) == T_BYTESTRING);
 
         std::string dict_key = parseByteString(torr_data, r_index).po_stringval;
