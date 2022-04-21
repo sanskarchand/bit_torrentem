@@ -21,6 +21,7 @@ enum TOKEN_TYPE {
 };
 
 
+const char REPL_CHAR = '@';
 /**
  * @brief The ParsedObject struct: A 'middle man' structure
  * Its purpose is to store the results of parsing in a comprehensible manner
@@ -61,8 +62,8 @@ ParsedObject parseDictionary(std::string &torr_data, int i);
 std::string getInfoSubString(std::string &torr_data, ParsedObject *info_dict);
 
 // printers
-void iteratePrintList(ParsedObject *p_list, int indent_level=0);
-void iteratePrintDict(ParsedObject *p_dict, int indent_level=0);
+void iteratePrintList(ParsedObject *p_list, bool replace_unprintable=true, int indent_level=0);
+void iteratePrintDict(ParsedObject *p_dict, bool replace_unprintable=true, int indent_level=0);
 
 
 } //END_NAMESPACE_BTPARSER

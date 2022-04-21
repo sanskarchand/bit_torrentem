@@ -1,4 +1,6 @@
 #include "parser.hpp"
+#include <iostream>
+#include <algorithm>
 
 namespace BtParser
 {
@@ -13,7 +15,7 @@ TOKEN_TYPE identifyToken(std::string &torr_data, int index)
 {
     char f = torr_data.at(index);
 
-    if (f >= '1' && f <= '9') {
+    if (f >= '0' && f <= '9') {
         return T_BYTESTRING;
     } else if (f == 'i') {
         return T_INTEGER;
@@ -64,7 +66,7 @@ int crunchList(std::string &torr_data, int index)
                 final_index = crunchDictionary(torr_data, final_index);
                 break;
             default:
-                printf("ERROR ERROR ERROR crunchList error error ABORT ABORT\n");
+                fprintf(stderr, "crunchList: invalid value in list\n");
                 break;
         }
 
@@ -83,6 +85,7 @@ int crunchDictionary(std::string &torr_data, int index)
     char check_c = torr_data.at(final_index);
 
     while (check_c != 'e') {
+
         assert("Error: key is not string" &&
                identifyToken(torr_data, final_index) == T_BYTESTRING);
 
@@ -103,7 +106,7 @@ int crunchDictionary(std::string &torr_data, int index)
                 final_index = crunchDictionary(torr_data, final_index);
                 break;
             default:
-                printf("ERROR ERROR ERROR crunchList error error ABORT ABORT\n");
+                fprintf(stderr, "crunchDictionary: invalid value in dictionary\n");
                 break;
         }
         check_c = torr_data.at(final_index);
@@ -179,7 +182,7 @@ ParsedObject parseList(std::string &torr_data, int i)
                 r_index = crunchDictionary(torr_data, r_index);
                 break;
             default:
-                printf("ERROR ERROR ERROR crunchList error error ABORT ABORT\n");
+                fprintf(stderr, "parseList: invalid value in list\n");
                 break;
         }
         list_obj.po_listval.push_back(p_item);
@@ -208,6 +211,7 @@ ParsedObject parseDictionary(std::string &torr_data, int i)
     char check_c = torr_data.at(r_index);
 
     while (check_c != 'e') {
+        std::cout << "r_index = " << r_index << std::endl;
         assert("Error: key not string" && identifyToken(torr_data, r_index) == T_BYTESTRING);
 
         std::string dict_key = parseByteString(torr_data, r_index).po_stringval;
@@ -237,7 +241,7 @@ ParsedObject parseDictionary(std::string &torr_data, int i)
                 r_index = crunchDictionary(torr_data, r_index);
                 break;
             default:
-                printf("ERROR ERROR ERROR crunchList error error ABORT ABORT\n");
+                fprintf(stderr, "parseDictionary: invalid value in dict \n");
                 break;
         }
         dict_obj.po_dictval.insert(std::pair<std::string, ParsedObject>(dict_key, dict_val));
@@ -257,7 +261,7 @@ std::string getInfoSubString(std::string &torr_data, ParsedObject *dict_obj)
     return torr_data.substr(start_ind, end_ind - start_ind);
 }
 
-void iteratePrintList(ParsedObject *p_list, int indent_level)
+void iteratePrintList(ParsedObject *p_list, bool replace_unprintable, int indent_level)
 {
     assert("iteratePrintList: not a list" && p_list->po_type == T_LIST);
 
@@ -268,7 +272,12 @@ void iteratePrintList(ParsedObject *p_list, int indent_level)
 
         // using "%*s" to apply indents
         if (obj.po_type == T_BYTESTRING) {
-            printf("%*s%s\n", indent, "", obj.po_stringval.c_str());
+            std::string text = obj.po_stringval;
+            if (replace_unprintable) {
+                std::replace_if(text.begin(), text.end(),
+                                std::not_fn([](char c){ return isalnum(c) || c == ':'; }), REPL_CHAR);
+            }
+            printf("%*sV_STR=> %s\n", indent, "", text.c_str());
         } else if (obj.po_type == T_INTEGER) {
             printf("%*s%d\n", indent, "", obj.po_intval);
         } else if (obj.po_type == T_LIST) {
@@ -286,7 +295,7 @@ void iteratePrintList(ParsedObject *p_list, int indent_level)
 
 }
 
-void iteratePrintDict(ParsedObject *p_dict, int indent_level)
+void iteratePrintDict(ParsedObject *p_dict, bool replace_unprintable, int indent_level)
 {
     assert("iteratePrintdict: not a dict" && p_dict->po_type == T_DICTIONARY);
 
@@ -303,9 +312,13 @@ void iteratePrintDict(ParsedObject *p_dict, int indent_level)
         if (obj.po_type != T_BYTESTRING && obj.po_type != T_INTEGER) {
             printf("\n");
         }
-
         if (obj.po_type == T_BYTESTRING) {
-            printf("%*sV_STR=> %s\n", indent, "", obj.po_stringval.c_str());
+            std::string text = obj.po_stringval;
+            if (replace_unprintable) {
+                std::replace_if(text.begin(), text.end(),
+                                std::not_fn([](char c){ return isalnum(c) || c == ':'; }), REPL_CHAR);
+            }
+            printf("%*sV_STR=> %s\n", indent, "", text.c_str());
         } else if (obj.po_type == T_INTEGER) {
             printf("%*sV_INT=> %d\n", indent, "", obj.po_intval);
         } else if (obj.po_type == T_LIST) {

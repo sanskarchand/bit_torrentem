@@ -68,16 +68,12 @@ int TorrentNetworkHandler::initialTrackerRequest(int tracker_idx)
     }
 
     std::string text = resp.text;
+    std::cout << "resp.text size " << resp.text.size() << std::endl;
     char *filtered = new char[text.size() + 1];
-//    auto printable = text | std::views::filter(
-//                [](char c) { return isalnum(c); });
 
-    auto printable = std::copy_if(text.begin(), text.end(), filtered,
-                                  [](char c){ return isalnum(c); });
 
-    std::replace_if(text.begin(), text.end(), std::not_fn(isalnum), '@');
-    std::cout << "printable resp body: \n" << filtered << std::endl;
-    std::cout << "replaced text: \n" << text << std::endl;
+    std::replace_if(text.begin(), text.end(), std::not_fn([](char c){ return isalnum(c) || c == ':'; }), '@');
+    std::cout << "replaced text (size " << text.size() << " ): \n" << text << std::endl;
 
     BtParser::ParsedObject po = BtParser::parseDictionary(resp.text, 0);
     BtParser::iteratePrintDict(&po);

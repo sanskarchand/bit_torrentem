@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     MainWindow win_main;
 
     // C should allow this
-    const char *test_torrent_file="../../res/[Natsu] Yuru Camp  △ [BD][1080P][AAC][HEVC].torrent";
+    const char *test_torrent_file="../../res/Azumanga Daioh {Omnibus Edition} (2009) (Scanned) (senfgurke2).cbz.torrent";
 
     QLabel *label = new QLabel(&win_main);
     label->setText("Print a torrent file to stdout");
