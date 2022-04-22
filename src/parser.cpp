@@ -274,18 +274,18 @@ void iteratePrintList(ParsedObject *p_list, bool replace_unprintable, int indent
             std::string text = obj.po_stringval;
             if (replace_unprintable) {
                 std::replace_if(text.begin(), text.end(),
-                                std::not_fn([](char c){ return isalnum(c) || c == ':'; }), REPL_CHAR);
+                                std::not_fn([](char c){ return isalnum(c) || c == ':' || c == ' '; }), REPL_CHAR);
             }
             printf("%*sV_STR=> %s\n", indent, "", text.c_str());
         } else if (obj.po_type == T_INTEGER) {
             printf("%*s%d\n", indent, "", obj.po_intval);
         } else if (obj.po_type == T_LIST) {
             printf("%*s<LIST>\n", indent, "");
-            iteratePrintList(&obj, indent_level + 1);
+            iteratePrintList(&obj, replace_unprintable, indent_level + 1);
             printf("%*s</LIST>\n", indent, "");
         } else if (obj.po_type == T_DICTIONARY) {
             printf("%*s<DICT>\n", indent, "");
-            iteratePrintDict(&obj, indent_level + 1);
+            iteratePrintDict(&obj, replace_unprintable, indent_level + 1);
             printf("%*s</DICT>\n", indent, "");
 
         }
@@ -315,18 +315,18 @@ void iteratePrintDict(ParsedObject *p_dict, bool replace_unprintable, int indent
             std::string text = obj.po_stringval;
             if (replace_unprintable) {
                 std::replace_if(text.begin(), text.end(),
-                                std::not_fn([](char c){ return isalnum(c) || c == ':'; }), REPL_CHAR);
+                                std::not_fn([](char c){ return isalnum(c) || c == ':' || c == ' ';}), REPL_CHAR);
             }
             printf("%*sV_STR=> %s\n", indent, "", text.c_str());
         } else if (obj.po_type == T_INTEGER) {
             printf("%*sV_INT=> %d\n", indent, "", obj.po_intval);
         } else if (obj.po_type == T_LIST) {
             printf("%*s<LIST>\n", indent, "");
-            iteratePrintList(&obj, indent_level + 1);
+            iteratePrintList(&obj, replace_unprintable, indent_level + 1);
             printf("%*s</LIST>\n", indent, "");
         } else if (obj.po_type == T_DICTIONARY) {
             printf("%*s<DICT>\n", indent, "");
-            iteratePrintDict(&obj, indent_level + 1);
+            iteratePrintDict(&obj, replace_unprintable, indent_level + 1);
             printf("%*s</DICT>\n", indent, "");
 
         }
