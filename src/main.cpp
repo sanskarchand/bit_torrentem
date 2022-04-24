@@ -4,6 +4,7 @@
 #include "bt_network/network.hpp"
 #include "bt_utils/utils.hpp"
 #include "bt_utils/urlencode.hpp"
+#include "bt_daemon/daemon.h"
 #include <QApplication>
 #include <QLabel>
 
@@ -27,7 +28,6 @@ std::string loadMetainfoFile(const char *file_name)
 
 int main(int argc, char *argv[])
 {
-    printf("At main\n");
     QApplication app(argc, argv);
     MainWindow win_main;
 
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     std::string torr_data = loadMetainfoFile(test_torrent_file);
 
     BtParser::ParsedObject po = BtParser::parseDictionary(torr_data, 0);
-    //BtParser::iteratePrintDict(&po);
+    BtParser::iteratePrintDict(&po, true, 0);
     BtTorrent::Torrent torr_obj(&po, torr_data);
 
     //BtParser::ParsedObject info_obj = po.po_dictval["info"];
@@ -49,10 +49,9 @@ int main(int argc, char *argv[])
 
     //std::cout << info  << std::endl;
     BtNetwork::TorrentNetworkHandler tnh = BtNetwork::TorrentNetworkHandler(&torr_obj);
-    tnh.networkMainLoop();
+    tnh.initialTrackerRequest(0);
 
-    //tnh.connectToTracker(0);
-    //tnh.connectToTracker();
+    //Daemon::btd_daemon();
 
 
     //NOTABENE APR13,no GUI for now

@@ -57,7 +57,6 @@ int TorrentNetworkHandler::initialTrackerRequest(int tracker_idx)
             {"left", std::to_string(tr.left)}, {"compact", "0"}, {"no_peer_id", "0"},
             {"event", tr.event}};
 
-    std::cout << "sending GET/ to " << ann_url << std::endl;
     cpr::Response resp = cpr::Get(cpr::Url(ann_url), params);
 
     if (resp.status_code == 0) {

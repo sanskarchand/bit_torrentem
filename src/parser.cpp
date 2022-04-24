@@ -274,7 +274,7 @@ void iteratePrintList(ParsedObject *p_list, bool replace_unprintable, int indent
             std::string text = obj.po_stringval;
             if (replace_unprintable) {
                 std::replace_if(text.begin(), text.end(),
-                                std::not_fn([](char c){ return isalnum(c) || c == ':' || c == ' '; }), REPL_CHAR);
+                                std::not_fn([](char c){ return isprint(c); }), REPL_CHAR);
             }
             printf("%*sV_STR=> %s\n", indent, "", text.c_str());
         } else if (obj.po_type == T_INTEGER) {
@@ -315,7 +315,7 @@ void iteratePrintDict(ParsedObject *p_dict, bool replace_unprintable, int indent
             std::string text = obj.po_stringval;
             if (replace_unprintable) {
                 std::replace_if(text.begin(), text.end(),
-                                std::not_fn([](char c){ return isalnum(c) || c == ':' || c == ' ';}), REPL_CHAR);
+                                std::not_fn([](char c){ return isprint(c); }), REPL_CHAR);
             }
             printf("%*sV_STR=> %s\n", indent, "", text.c_str());
         } else if (obj.po_type == T_INTEGER) {
