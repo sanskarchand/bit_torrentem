@@ -7,18 +7,6 @@
 
 #include "parser.hpp"
 
-#define S_ANNOUNCE      std::string("announce")
-#define S_ANN_LIST      std::string("announce-list")
-#define S_CREATION      std::string("creation date")
-#define S_COMMENT       std::string("comment")
-#define S_INFO          std::string("info")
-#define S_FILES         std::string("files")
-#define S_LENGTH        std::string("length")
-#define S_PATH          std::string("path")
-#define S_NAME          std::string("name")
-#define S_PIECE_LEN     std::string("piece length")
-#define S_PIECES        std::string("pieces")
-
 //typedef std::map<std::string, std::vector<std::string>> FilesDict;
 
 namespace BtTorrent {
@@ -60,14 +48,16 @@ public:
     uint64_t t_total_size = 0;
     uint64_t t_downloaded_bytes = 0;
     uint64_t t_uploaded_bytes = 0;
+    //order identical with that of the metainfo file
+    std::vector<int> t_per_file_downloaded_bytes;
 
     bool t_error;
     std::string t_err_string;
 
 
     //REFAC_NOTE: Maybe keeping both is redundant
-    //should I make an unparser?
-    std::string t_torrent_file; // the data in the .torrent file
+    std::string t_torrent_file; // the data in the .torrent file\
+    //NOTE: serialize BtParser ParsedObject
     BtParser::ParsedObject *t_torrent_dict; // original dict
 
 };
