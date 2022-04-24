@@ -64,7 +64,7 @@ int TorrentNetworkHandler::initialTrackerRequest(int tracker_idx)
         return -1;
     }
     BtParser::ParsedObject po = BtParser::parseDictionary(resp.text, 0);
-    BtParser::iteratePrintDict(&po);
+    //BtParser::iteratePrintDict(&po);
 
 
     return 1;
